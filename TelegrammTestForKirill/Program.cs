@@ -8,16 +8,16 @@ using Telegram.Bot;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.InputFiles;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TelegrammTestForKirill
 {
     class Program
     {
+        static TelegramBotClient botClient = new TelegramBotClient("5692954830:AAHQ8yAf7ccKhOntIDuLd1YWAdCoIy6QusQ");
         static async Task Main(string[] args)
         {
-            var botClient = new TelegramBotClient("5692954830:AAHQ8yAf7ccKhOntIDuLd1YWAdCoIy6QusQ");
-
             var cts = new CancellationTokenSource();
 
             botClient.StartReceiving(
@@ -44,91 +44,69 @@ namespace TelegrammTestForKirill
             return null;
         }
         #endregion
-        //"Новости отдела", "Личная новость", "Новости отрасли", "Новость внешнего мира", "Новости компании", "Другое"
-        public static async Task ChooseCategory(ITelegramBotClient client, Update message)
-        {
-            var chatId = message.Message.From.Id;
-            Message sentMessage = await client.SendTextMessageAsync(
-                       chatId: chatId,
-                       "Кнопки",
-                       replyMarkup: new ReplyKeyboardMarkup(new[] {
-                        new KeyboardButton("Новости отдела"),
-                        new KeyboardButton("Личная новость"),
-                        new KeyboardButton("Новости отрасли"),
-                        new KeyboardButton("Новость внешнего мира"),
-                        new KeyboardButton("Новости компании"),
-                        new KeyboardButton("Другое"),
-                        new KeyboardButton("Отмена")
-                       }));
-        }
-        public static async Task CreateMenuForSentenceAsync(ITelegramBotClient client, Update message)
-        {
-            var chatId = message.Message.From.Id;
-            Message sentMessage = await client.SendTextMessageAsync(
-                       chatId: chatId,
-                       "Кнопки",
-                       replyMarkup: new ReplyKeyboardMarkup(new[] {
-                        new KeyboardButton("Отправить новость"),
-                        new KeyboardButton("Отмена"),
-                       }));
-        }
 
         private static async Task HandleUpdateAsync(ITelegramBotClient client, Update message, CancellationToken token)
         {
-            var messageText = message.Message.Text;
-            var chatId = message.Message.From.Id;
-
-            Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
-
-            switch (messageText)
+            switch (message.Type)
             {
-                case "Start":
-                    {
-                        await CreateMenuForSentenceAsync(client, message);
-                        break;
-                    }
-                
-                case "Предложить новость":
-                    {
-                        await CreateMenuForSentenceAsync(client, message);
-
-                        break;
-                    }
-
-                case "Отправить новость":
-                    {
-                        await ChooseCategory(client, message);
-                        break;
-                    }
-
-                case "Новости отдела":
-                    {
-                        break;
-                    }
-                case "2":
-                    {
-                        break;
-                    }
-                case "3":
-                    {
-                        break;
-                    }
-                case "4":
-                    {
-                        break;
-                    }
+                case UpdateType.Unknown:
+                    Console.WriteLine("Unknown");
+                    break;
+                case UpdateType.Message:
+                    //var stiker = message.Message.Sticker;
+                    //Console.WriteLine(stiker.FileUniqueId);
+                    //Console.WriteLine("Message");
+                    await botClient.SendStickerAsync(message.CallbackQuery.From.Id, new InputOnlineFile("AgADqwADK-ceKQ"));
+                    break;
+                case UpdateType.InlineQuery:
+                    Console.WriteLine("InlineQuery");
+                    break;
+                case UpdateType.ChosenInlineResult:
+                    Console.WriteLine("ChosenInlineResult");
+                    break;
+                case UpdateType.CallbackQuery:
+                    Console.WriteLine("CallbackQuery");
+                    break;
+                case UpdateType.EditedMessage:
+                    Console.WriteLine("EditedMessage");
+                    break;
+                case UpdateType.ChannelPost:
+                    Console.WriteLine("ChannelPost");
+                    break;
+                case UpdateType.EditedChannelPost:
+                    Console.WriteLine("EditedChannelPost");
+                    break;
+                case UpdateType.ShippingQuery:
+                    Console.WriteLine("ShippingQuery");
+                    break;
+                case UpdateType.PreCheckoutQuery:
+                    Console.WriteLine("PreCheckoutQuery");
+                    break;
+                case UpdateType.Poll:
+                    Console.WriteLine("Poll");
+                    break;
+                case UpdateType.PollAnswer:
+                    Console.WriteLine("PollAnswer");
+                    break;
+                case UpdateType.MyChatMember:
+                    Console.WriteLine("MyChatMember");
+                    break;
+                case UpdateType.ChatMember:
+                    Console.WriteLine("ChatMember");
+                    break;
+                case UpdateType.ChatJoinRequest:
+                    Console.WriteLine("ChatJoinRequest");
+                    break;
+                default:
+                    Console.WriteLine("null");
+                    break;
             }
+            //var messageText = message.Message.Text;
+            //var chatId = message.Message.From.Id;
 
-            if (messageText == "Start")
-            {
-                Message sentMessage = await client.SendTextMessageAsync(
-                       chatId: chatId,
-                       "Кнопки",
-                       replyMarkup: new ReplyKeyboardMarkup(new[] {
-                        new KeyboardButton("Отправить новость"),
-                        new KeyboardButton("Отмена"),
-                       }));
-            }
+            //Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
+
+            //await client.SendTextMessageAsync(chatId: chatId, messageText);
         }
     }
 }
